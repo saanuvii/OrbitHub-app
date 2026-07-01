@@ -13,8 +13,10 @@ def create_app(config_class=Config):
     db.init_app(app)
     cache.init_app(app)
 
-    # Create tables
+    # We MUST push the application context to safely create tables
     with app.app_context():
+        # Using db.create_all() creates SQLite files correctly on Render
+        # If deploying to Supabase, you should use flask-migrate, but this works for SQLite + Supabase directly if tables don't exist
         db.create_all()
 
     # Register blueprints
@@ -45,8 +47,8 @@ def create_app(config_class=Config):
 
     return app
 
+# Gunicorn expects an application callable.
 app = create_app()
 
 if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
