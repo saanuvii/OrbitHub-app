@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Mars Rovers - NASA Space Explorer{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <h2 class="mb-4">Mars Rover Photos</h2>
+    
+    <!-- Filters -->
+    <div class="glass-card p-4 mb-4">
+        <form action="{{ url_for('mars.index') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label text-muted">Rover</label>
+                <select name="rover" class="form-select">
+                    <option value="curiosity" {% if rover == 'curiosity' %}selected{% endif %}>Curiosity</option>
+                    <option value="opportunity" {% if rover == 'opportunity' %}selected{% endif %}>Opportunity</option>
+                    <option value="spirit" {% if rover == 'spirit' %}selected{% endif %}>Spirit</option>
+                    <option value="perseverance" {% if rover == 'perseverance' %}selected{% endif %}>Perseverance</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-muted">Camera</label>
+                <select name="camera" class="form-select">
+                    <option value="all" {% if camera == 'all' %}selected{% endif %}>All Cameras</option>
+                    <option value="FHAZ" {% if camera == 'FHAZ' %}selected{% endif %}>Front Hazard Avoidance</option>
+                    <option value="RHAZ" {% if camera == 'RHAZ' %}selected{% endif %}>Rear Hazard Avoidance</option>
+                    <option value="MAST" {% if camera == 'MAST' %}selected{% endif %}>Mast Camera</option>
+                    <option value="CHEMCAM" {% if camera == 'CHEMCAM' %}selected{% endif %}>Chemistry and Camera Complex</option>
+                    <option value="NAVCAM" {% if camera == 'NAVCAM' %}selected{% endif %}>Navigation Camera</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-muted">Earth Date (Optional)</label>
+                <input type="date" name="date" class="form-control" value="{{ date }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-gradient w-100">Filter Photos</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Photos Grid -->
+    {% if photos %}
+        <div class="row g-4">
+            {% for photo in photos %}
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-card h-100 overflow-hidden d-flex flex-column fade-in" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                    <div class="position-relative" style="height: 250px;">
+                        <img src="{{ photo.img_src }}" class="w-100 h-100 object-fit-cover" alt="Mars Photo" loading="lazy">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-dark bg-opacity-75 border border-secondary">{{ photo.earth_date }}</span>
+                        </div>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <h5 class="text-white mb-1">{{ photo.rover.name }}</h5>
+                        <p class="text-accent small mb-2">{{ photo.camera.full_name }}</p>
+                        
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">Sol: {{ photo.sol }}</span>
+                            <div class="btn-group">
+                                <a href="{{ photo.img_src }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-expand"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-glow save-favorite-btn" data-payload="{{ photo.fav_payload }}">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-5">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm" style="--bs-pagination-bg: rgba(17, 24, 39, 0.8); --bs-pagination-color: var(--primary); --bs-pagination-border-color: rgba(255,255,255,0.1);">
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('mars.index', rover=rover, camera=camera, date=date, page=page-1) }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active" style="--bs-pagination-active-bg: var(--primary); --bs-pagination-active-border-color: var(--primary);">
+                        <span class="page-link">Page {{ page }}</span>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('mars.index', rover=rover, camera=camera, date=date, page=page+1) }}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    {% else %}
+        <div class="text-center py-5 glass-card">
+            <h4 class="text-muted">No photos found for these filters.</h4>
+            <p>Try selecting a different date or camera.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

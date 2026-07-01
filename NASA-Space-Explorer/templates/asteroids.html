@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Near Earth Asteroids - NASA Space Explorer{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Near Earth Asteroids (NEOs)</h2>
+        
+        <form action="{{ url_for('asteroids.index') }}" method="GET" class="d-flex gap-2">
+            <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
+            <button type="submit" class="btn btn-outline-glow text-nowrap">Show Next 7 Days</button>
+        </form>
+    </div>
+
+    <div class="glass-card overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0" style="--bs-table-bg: transparent;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Est. Diameter (m)</th>
+                        <th>Speed (km/h)</th>
+                        <th>Miss Distance (km)</th>
+                        <th>Approach Date</th>
+                        <th>Hazardous</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ast in asteroids %}
+                    {% set ca_data = ast.close_approach_data[0] %}
+                    <tr class="{% if ast.is_potentially_hazardous_asteroid %}table-danger text-danger bg-opacity-25{% endif %}">
+                        <td class="fw-bold">{{ ast.name }}</td>
+                        <td>
+                            {{ "%.1f"|format(ast.estimated_diameter.meters.estimated_diameter_min) }} - 
+                            {{ "%.1f"|format(ast.estimated_diameter.meters.estimated_diameter_max) }}
+                        </td>
+                        <td>{{ "%.0f"|format(ca_data.relative_velocity.kilometers_per_hour|float) }}</td>
+                        <td>{{ "%.0f"|format(ca_data.miss_distance.kilometers|float) }}</td>
+                        <td>{{ ca_data.close_approach_date_full }}</td>
+                        <td>
+                            {% if ast.is_potentially_hazardous_asteroid %}
+                                <span class="badge bg-danger"><i class="fas fa-exclamation-triangle"></i> Yes</span>
+                            {% else %}
+                                <span class="badge bg-success">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-glow save-favorite-btn" data-payload="{{ ast.fav_payload }}">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">No asteroids found for this period.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

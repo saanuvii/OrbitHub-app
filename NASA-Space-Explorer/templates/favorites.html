@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Favorites - NASA Space Explorer{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <h2 class="mb-4 text-danger"><i class="fas fa-heart me-2"></i>My Favorites</h2>
+
+    {% if favorites %}
+    <!-- Filter Controls -->
+    <div class="mb-4">
+        <div class="btn-group" role="group" aria-label="Filter favorites">
+            <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="apod">APOD</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="mars">Mars Rovers</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="asteroid">Asteroids</button>
+        </div>
+    </div>
+
+    <div class="row g-4" id="favorites-container">
+        {% for fav in favorites %}
+        <div class="col-md-6 col-lg-4 fav-item" data-type="{{ fav.type }}" id="fav-card-{{ fav.id }}">
+            <div class="glass-card h-100 d-flex flex-column overflow-hidden">
+                {% if fav.image_url %}
+                <div class="ratio ratio-16x9">
+                    <img src="{{ fav.image_url }}" alt="{{ fav.title }}" class="object-fit-cover w-100 h-100">
+                </div>
+                {% else %}
+                <div class="ratio ratio-16x9 bg-dark d-flex align-items-center justify-content-center">
+                    <i class="fas fa-meteor display-1 text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-secondary text-uppercase">{{ fav.type }}</span>
+                        <small class="text-muted">{{ fav.date.split(' ')[0] }}</small>
+                    </div>
+                    
+                    <h5 class="text-white mb-2">{{ fav.title }}</h5>
+                    
+                    {% if fav.type == 'mars' %}
+                        <p class="small text-muted mb-3">Rover: {{ fav.details.rover }}<br>Camera: {{ fav.details.camera }}</p>
+                    {% elif fav.type == 'asteroid' %}
+                        <p class="small text-muted mb-3">Approach: {{ fav.details.close_approach_date }}<br>Hazardous: {{ 'Yes' if fav.details.is_potentially_hazardous_asteroid else 'No' }}</p>
+                    {% endif %}
+                    
+                    <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between">
+                        {% if fav.image_url %}
+                        <a href="{{ fav.image_url }}" target="_blank" class="btn btn-sm btn-outline-info">View</a>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-danger remove-fav-btn ms-auto" data-id="{{ fav.id }}">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass-card p-5 text-center">
+        <i class="far fa-heart display-1 text-muted mb-3"></i>
+        <h3>No favorites yet</h3>
+        <p class="text-muted">Start exploring and save your favorite images and data here!</p>
+        <a href="{{ url_for('apod.index') }}" class="btn btn-gradient mt-3">Explore APOD</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Filtering logic
+    const filterBtns = document.querySelectorAll('[data-filter]');
+    const items = document.querySelectorAll('.fav-item');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Update active state
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const filter = btn.getAttribute('data-filter');
+            
+            items.forEach(item => {
+                if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Remove functionality
+    document.querySelectorAll('.remove-fav-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            if(!confirm('Are you sure you want to remove this from favorites?')) return;
+            
+            const id = e.currentTarget.getAttribute('data-id');
+            const card = document.getElementById(`fav-card-${id}`);
+            
+            try {
+                const response = await fetch(`/favorites/remove/${id}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => card.remove(), 300);
+                    showToast('Success', 'Removed from favorites', 'success');
+                } else {
+                    showToast('Error', result.message || 'Failed to remove', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error', 'An error occurred', 'danger');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
