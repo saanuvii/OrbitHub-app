@@ -9,51 +9,61 @@
         
         <form action="{{ url_for('asteroids.index') }}" method="GET" class="d-flex gap-2">
             <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
-            <button type="submit" class="btn btn-outline-glow text-nowrap">Show Next 7 Days</button>
+            <button type="submit" class="btn btn-glass text-nowrap">Show Next 7 Days</button>
         </form>
     </div>
-
+    
+    {% if asteroids and asteroids.error is defined and asteroids.error %}
+    <div class="alert alert-warning glass-card d-flex align-items-center">
+        <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+        <div>
+            <strong>API Notice:</strong> {{ asteroids.msg }}
+            <p class="mb-0 small text-muted">NASA APIs might be experiencing high traffic. Please try again later.</p>
+        </div>
+    </div>
+    {% else %}
     <div class="glass-card overflow-hidden">
         <div class="table-responsive">
             <table class="table table-dark table-hover mb-0" style="--bs-table-bg: transparent;">
-                <thead>
+                <thead style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <tr>
-                        <th>Name</th>
-                        <th>Est. Diameter (m)</th>
-                        <th>Speed (km/h)</th>
-                        <th>Miss Distance (km)</th>
-                        <th>Approach Date</th>
-                        <th>Hazardous</th>
+                        <th class="fw-normal text-muted">Name</th>
+                        <th class="fw-normal text-muted">Est. Diameter (m)</th>
+                        <th class="fw-normal text-muted">Speed (km/h)</th>
+                        <th class="fw-normal text-muted">Miss Distance (km)</th>
+                        <th class="fw-normal text-muted">Approach Date</th>
+                        <th class="fw-normal text-muted">Hazardous</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for ast in asteroids %}
                     {% set ca_data = ast.close_approach_data[0] %}
-                    <tr class="{% if ast.is_potentially_hazardous_asteroid %}table-danger text-danger bg-opacity-25{% endif %}">
-                        <td class="fw-bold">{{ ast.name }}</td>
-                        <td>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); background: {% if ast.is_potentially_hazardous_asteroid %}rgba(220,53,69,0.05){% else %}transparent{% endif %};">
+                        <td class="fw-medium">{{ ast.name }}</td>
+                        <td class="text-white-50">
                             {{ "%.1f"|format(ast.estimated_diameter.meters.estimated_diameter_min) }} - 
                             {{ "%.1f"|format(ast.estimated_diameter.meters.estimated_diameter_max) }}
                         </td>
-                        <td>{{ "%.0f"|format(ca_data.relative_velocity.kilometers_per_hour|float) }}</td>
-                        <td>{{ "%.0f"|format(ca_data.miss_distance.kilometers|float) }}</td>
-                        <td>{{ ca_data.close_approach_date_full }}</td>
+                        <td class="text-white-50">{{ "%.0f"|format(ca_data.relative_velocity.kilometers_per_hour|float) }}</td>
+                        <td class="text-white-50">{{ "%.0f"|format(ca_data.miss_distance.kilometers|float) }}</td>
+                        <td class="text-white-50">{{ ca_data.close_approach_date_full }}</td>
                         <td>
                             {% if ast.is_potentially_hazardous_asteroid %}
-                                <span class="badge bg-danger"><i class="fas fa-exclamation-triangle"></i> Yes</span>
+                                <span class="badge" style="background: rgba(220,53,69,0.2); border: 1px solid rgba(220,53,69,0.5); color: #ff6b6b;"><i class="fas fa-exclamation-triangle"></i> Yes</span>
                             {% else %}
-                                <span class="badge bg-success">No</span>
+                                <span class="badge" style="background: rgba(25,135,84,0.2); border: 1px solid rgba(25,135,84,0.5); color: #51cf66;">No</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="text-center py-4">No asteroids found for this period.</td>
+                        <td colspan="6" class="text-center py-5 text-muted">No asteroids found for this period.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

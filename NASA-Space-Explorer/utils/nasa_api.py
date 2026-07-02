@@ -15,11 +15,13 @@ def fetch_apod(date=None):
         
     try:
         response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching APOD: {e}")
-        return None
+        # Even if it's 429, we want the JSON response to read the message
+        data = response.json()
+        if response.status_code != 200:
+            return {'error': True, 'msg': data.get('msg') or data.get('error', {}).get('message', 'NASA API Error')}
+        return data
+    except Exception as e:
+        return {'error': True, 'msg': 'Failed to connect to NASA APOD API.'}
 
 def fetch_asteroids(start_date=None, end_date=None):
     if not start_date:
@@ -36,9 +38,11 @@ def fetch_asteroids(start_date=None, end_date=None):
     
     try:
         response = requests.get(url, params=params, timeout=15)
-        response.raise_for_status()
         data = response.json()
         
+        if response.status_code != 200:
+            return {'error': True, 'msg': data.get('error_message') or data.get('error', {}).get('message', 'NASA API Error')}
+            
         # Flatten the structure
         asteroids = []
         for date, neos in data.get('near_earth_objects', {}).items():
@@ -47,9 +51,8 @@ def fetch_asteroids(start_date=None, end_date=None):
         # Sort by closest approach
         asteroids.sort(key=lambda x: x['close_approach_data'][0]['miss_distance']['kilometers'])
         return asteroids
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching Asteroids: {e}")
-        return []
+    except Exception as e:
+        return {'error': True, 'msg': 'Failed to connect to NASA NeoWs API.'}
 
 def fetch_space_weather(start_date=None, end_date=None):
     if not start_date:
@@ -60,10 +63,14 @@ def fetch_space_weather(start_date=None, end_date=None):
         "flares": [],
         "storms": [],
         "cmes": [],
-        "notifications": []
+        "notifications": [],
+        "error": None
     }
     
     try:
+        # We will track if all fail to determine a global rate limit / error
+        failed_count = 0
+        
         # Fetch Solar Flares
         flares_url = "https://api.nasa.gov/DONKI/FLR"
         params = {"startDate": start_date, "api_key": api_key}
@@ -72,8 +79,10 @@ def fetch_space_weather(start_date=None, end_date=None):
             flares_res = requests.get(flares_url, params=params, timeout=10)
             if flares_res.status_code == 200:
                 weather_data["flares"] = flares_res.json()
+            else:
+                failed_count += 1
         except Exception:
-            pass
+            failed_count += 1
             
         # Fetch Geomagnetic Storms
         storms_url = "https://api.nasa.gov/DONKI/GST"
@@ -81,8 +90,10 @@ def fetch_space_weather(start_date=None, end_date=None):
             storms_res = requests.get(storms_url, params=params, timeout=10)
             if storms_res.status_code == 200:
                 weather_data["storms"] = storms_res.json()
+            else:
+                failed_count += 1
         except Exception:
-            pass
+            failed_count += 1
             
         # Fetch CMEs
         cmes_url = "https://api.nasa.gov/DONKI/CME"
@@ -90,8 +101,10 @@ def fetch_space_weather(start_date=None, end_date=None):
             cmes_res = requests.get(cmes_url, params=params, timeout=10)
             if cmes_res.status_code == 200:
                 weather_data["cmes"] = cmes_res.json()
+            else:
+                failed_count += 1
         except Exception:
-            pass
+            failed_count += 1
             
         # Fetch Notifications
         notif_url = "https://api.nasa.gov/DONKI/notifications"
@@ -101,10 +114,15 @@ def fetch_space_weather(start_date=None, end_date=None):
             notif_res = requests.get(notif_url, params=notif_params, timeout=10)
             if notif_res.status_code == 200:
                 weather_data["notifications"] = notif_res.json()
+            else:
+                failed_count += 1
         except Exception:
-            pass
+            failed_count += 1
+            
+        if failed_count == 4:
+            weather_data["error"] = "NASA DONKI APIs are currently rate-limited or unavailable."
             
     except Exception as e:
-        print(f"Error fetching Space Weather: {e}")
+        weather_data["error"] = "Failed to fetch Space Weather data."
         
     return weather_data

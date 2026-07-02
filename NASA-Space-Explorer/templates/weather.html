@@ -11,50 +11,66 @@
             <input type="date" name="start_date" class="form-control form-control-sm" value="{{ start_date }}">
             <span class="text-muted">to</span>
             <input type="date" name="end_date" class="form-control form-control-sm" value="{{ end_date }}">
-            <button type="submit" class="btn btn-sm btn-outline-glow">Update</button>
+            <button type="submit" class="btn btn-sm btn-glass">Update</button>
         </form>
     </div>
+    
+    {% if data.error %}
+    <div class="alert alert-warning glass-card d-flex align-items-center">
+        <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+        <div>
+            <strong>API Notice:</strong> {{ data.error }}
+            <p class="mb-0 small text-muted">NASA APIs might be experiencing high traffic. Please try again later.</p>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Summary Cards -->
     <div class="row g-4 mb-5">
         <div class="col-md-4">
-            <div class="glass-card p-4 text-center h-100 border-start border-warning border-4">
-                <i class="fas fa-sun text-warning display-4 mb-3"></i>
-                <h4>Solar Flares</h4>
-                <h2 class="text-gradient">{{ data.flares|length }}</h2>
+            <div class="glass-card p-4 text-center h-100">
+                <div class="mb-3">
+                    <i class="fas fa-sun text-warning display-4" style="filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.5));"></i>
+                </div>
+                <h4 class="text-muted fw-light">Solar Flares</h4>
+                <h2 class="text-white">{{ data.flares|length }}</h2>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="glass-card p-4 text-center h-100 border-start border-danger border-4">
-                <i class="fas fa-bolt text-danger display-4 mb-3"></i>
-                <h4>Geomagnetic Storms</h4>
-                <h2 class="text-gradient">{{ data.storms|length }}</h2>
+            <div class="glass-card p-4 text-center h-100">
+                <div class="mb-3">
+                    <i class="fas fa-bolt text-danger display-4" style="filter: drop-shadow(0 0 10px rgba(220, 53, 69, 0.5));"></i>
+                </div>
+                <h4 class="text-muted fw-light">Geomagnetic Storms</h4>
+                <h2 class="text-white">{{ data.storms|length }}</h2>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="glass-card p-4 text-center h-100 border-start border-info border-4">
-                <i class="fas fa-wind text-info display-4 mb-3"></i>
-                <h4>Coronal Mass Ejections</h4>
-                <h2 class="text-gradient">{{ data.cmes|length }}</h2>
+            <div class="glass-card p-4 text-center h-100">
+                <div class="mb-3">
+                    <i class="fas fa-wind text-info display-4" style="filter: drop-shadow(0 0 10px rgba(13, 202, 240, 0.5));"></i>
+                </div>
+                <h4 class="text-muted fw-light">Coronal Mass Ejections</h4>
+                <h2 class="text-white">{{ data.cmes|length }}</h2>
             </div>
         </div>
     </div>
 
     <!-- Timeline/Notifications -->
-    <h3 class="mb-4">Recent Notifications</h3>
+    <h3 class="mb-4 fw-light">Recent Notifications</h3>
     <div class="glass-card p-4">
         {% if data.notifications %}
-            <div class="timeline" style="border-left: 2px solid var(--primary); padding-left: 20px;">
+            <div class="timeline position-relative" style="border-left: 1px solid var(--glass-border); padding-left: 20px;">
                 {% for notif in data.notifications[:15] %}
                 <div class="timeline-item mb-4 position-relative">
-                    <span class="position-absolute top-0 start-0 translate-middle p-2 bg-primary border border-light rounded-circle" style="left: -20px !important;"></span>
-                    <div class="card bg-dark bg-opacity-50 border-secondary">
-                        <div class="card-header border-secondary d-flex justify-content-between align-items-center py-2">
-                            <strong class="text-accent">{{ notif.messageType }}</strong>
-                            <span class="badge bg-secondary">{{ notif.messageIssueTime }}</span>
+                    <span class="position-absolute top-0 start-0 translate-middle p-2 rounded-circle" style="left: -20px !important; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.4);"></span>
+                    <div class="card bg-transparent border-0">
+                        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center py-2 px-0">
+                            <strong class="text-white">{{ notif.messageType }}</strong>
+                            <span class="badge" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); font-weight: normal;">{{ notif.messageIssueTime }}</span>
                         </div>
-                        <div class="card-body p-3">
-                            <p class="mb-0 small text-muted font-monospace" style="white-space: pre-wrap; font-size: 0.85rem;">{{ notif.messageBody }}</p>
+                        <div class="card-body px-0 py-3">
+                            <p class="mb-0 text-muted font-monospace" style="white-space: pre-wrap; font-size: 0.85rem; line-height: 1.6;">{{ notif.messageBody }}</p>
                         </div>
                     </div>
                 </div>

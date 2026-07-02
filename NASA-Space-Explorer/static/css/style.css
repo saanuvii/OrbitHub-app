@@ -79,47 +79,35 @@ body {
 }
 
 .glass-card:hover {
-    transform: translateY(-10px) scale(1.02);
+    transform: translateY(-5px);
     box-shadow: 0 15px 45px rgba(0, 240, 255, 0.15);
-    border-color: rgba(0, 240, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Buttons */
-.btn-gradient {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    border: none;
+/* Glass Buttons */
+.btn-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text);
     border-radius: 12px;
     padding: 0.75rem 2rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-
-.btn-gradient:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
-    color: white;
-}
-
-.btn-outline-glow {
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    background: transparent;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.85rem;
     font-weight: 500;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
 }
 
-.btn-outline-glow:hover {
-    background: rgba(0, 240, 255, 0.1);
-    color: white;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Animations */
@@ -154,16 +142,16 @@ body {
 
 /* Form Controls */
 .form-control, .form-select {
-    background-color: rgba(10, 10, 30, 0.6);
+    background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
     color: white;
     border-radius: 10px;
 }
 .form-control:focus, .form-select:focus {
-    background-color: rgba(10, 10, 30, 0.9);
-    border-color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
     color: white;
-    box-shadow: 0 0 0 0.25rem rgba(0, 240, 255, 0.25);
+    box-shadow: none;
 }
 
 /* Utilities */
