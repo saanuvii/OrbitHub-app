@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}EPIC Earth Imagery - OrbitHub{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <h2 class="mb-0">EPIC Earth Imagery</h2>
+        
+        <form action="{{ url_for('epic.index') }}" method="GET" class="d-flex gap-2 w-100 w-md-auto align-items-center justify-content-md-end">
+            <input type="date" name="date" class="form-control" max="{{ now|default('') }}" value="{{ selected_date or '' }}" style="max-width: 200px;">
+            <button type="submit" class="btn btn-glass" style="white-space: nowrap; padding-left: 1.5rem; padding-right: 1.5rem;">Load Date</button>
+        </form>
+    </div>
+    
+    <p class="text-muted mb-4 lead opacity-75">View daily imagery of Earth captured by the DSCOVR satellite's Earth Polychromatic Imaging Camera.</p>
+
+    {% if data and data.error is defined and data.error %}
+        <div class="alert alert-warning glass-card d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+            <div>
+                <strong>API Notice:</strong> {{ data.msg }}
+                <p class="mb-0 small text-muted">Please try again later.</p>
+            </div>
+        </div>
+    {% elif data and data.images %}
+        <div class="text-center mb-4">
+            <span class="badge bg-transparent border border-primary text-primary px-3 py-2 fs-6 rounded-pill">
+                <i class="fas fa-calendar-alt me-2"></i> {{ data.date }}
+            </span>
+        </div>
+        
+        <div class="row g-4">
+            {% for img in data.images %}
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-card h-100 overflow-hidden d-flex flex-column fade-in" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                    <div class="ratio ratio-1x1 bg-dark">
+                        <!-- We load the image, lazy load to save bandwidth since these are high quality -->
+                        <img src="{{ img.image_url }}" class="w-100 h-100 object-fit-cover" alt="Earth from DSCOVR" loading="lazy">
+                    </div>
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-accent fw-bold small"><i class="fas fa-satellite me-1"></i> DSCOVR</span>
+                            <span class="text-muted small">{{ img.date.split(' ')[1] }} UTC</span>
+                        </div>
+                        <div class="small text-muted mb-4">
+                            <strong>Coords:</strong> <br>
+                            Lat: {{ "%.2f"|format(img.centroid_coordinates.lat) }}, Lon: {{ "%.2f"|format(img.centroid_coordinates.lon) }}
+                        </div>
+                        
+                        <div class="mt-auto pt-3 border-top border-secondary border-opacity-25 text-center">
+                            <a href="{{ img.image_url }}" target="_blank" class="btn btn-glass w-100">
+                                <i class="fas fa-expand me-2"></i>View Full Resolution
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="glass-card p-5 text-center fade-in">
+            <i class="fas fa-globe-americas display-1 text-primary opacity-50 mb-4"></i>
+            <h3>No Imagery Available</h3>
+            <p class="text-muted mb-0">There might not be any imagery for the selected date. Please try another date.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Exoplanet Archive - OrbitHub{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <h2 class="mb-0">NASA Exoplanet Archive</h2>
+    </div>
+    
+    <p class="text-muted mb-4 lead opacity-75">Explore recently discovered planets outside our solar system. Data is sourced from the NASA Exoplanet Archive.</p>
+
+    {% if data and data.error is defined and data.error %}
+    <div class="alert alert-warning glass-card d-flex align-items-center">
+        <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+        <div>
+            <strong>API Notice:</strong> {{ data.msg }}
+            <p class="mb-0 small text-muted">NASA APIs might be experiencing high traffic. Please try again later.</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="glass-card overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0" style="--bs-table-bg: transparent;">
+                <thead style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <tr>
+                        <th class="fw-normal text-muted">Planet Name</th>
+                        <th class="fw-normal text-muted">Host Star</th>
+                        <th class="fw-normal text-muted">Discovery Method</th>
+                        <th class="fw-normal text-muted">Discovery Year</th>
+                        <th class="fw-normal text-muted">Mass (Earths)</th>
+                        <th class="fw-normal text-muted">Radius (Earths)</th>
+                        <th class="fw-normal text-muted">Distance (Parsecs)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for planet in data %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td class="fw-medium text-accent">{{ planet.pl_name }}</td>
+                        <td class="text-white-50">{{ planet.hostname }}</td>
+                        <td><span class="badge bg-transparent border border-secondary text-light">{{ planet.discoverymethod }}</span></td>
+                        <td class="text-white-50">{{ planet.disc_year }}</td>
+                        <td class="text-white-50">{% if planet.pl_bmasse %}{{ "%.2f"|format(planet.pl_bmasse|float) }}{% else %}Unknown{% endif %}</td>
+                        <td class="text-white-50">{% if planet.pl_rade %}{{ "%.2f"|format(planet.pl_rade|float) }}{% else %}Unknown{% endif %}</td>
+                        <td class="text-white-50">{% if planet.sy_dist %}{{ "%.2f"|format(planet.sy_dist|float) }}{% else %}Unknown{% endif %}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">No exoplanet data available at this time.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="text-end text-muted small mt-3">Showing 100 recent discoveries.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -15,7 +15,6 @@ def fetch_apod(date=None):
         
     try:
         response = requests.get(url, params=params, timeout=10)
-        # Even if it's 429, we want the JSON response to read the message
         data = response.json()
         if response.status_code != 200:
             return {'error': True, 'msg': data.get('msg') or data.get('error', {}).get('message', 'NASA API Error')}
@@ -43,14 +42,74 @@ def fetch_asteroids(start_date=None, end_date=None):
         if response.status_code != 200:
             return {'error': True, 'msg': data.get('error_message') or data.get('error', {}).get('message', 'NASA API Error')}
             
-        # Flatten the structure
         asteroids = []
         for date, neos in data.get('near_earth_objects', {}).items():
             asteroids.extend(neos)
             
-        # Sort by closest approach
         asteroids.sort(key=lambda x: x['close_approach_data'][0]['miss_distance']['kilometers'])
         return asteroids
     except Exception as e:
         return {'error': True, 'msg': 'Failed to connect to NASA NeoWs API.'}
 
+def fetch_epic(date=None):
+    api_key = get_api_key()
+    
+    # If no date, get the most recent date available first
+    if not date:
+        try:
+            latest_url = f"https://api.nasa.gov/EPIC/api/natural/all?api_key={api_key}"
+            response = requests.get(latest_url, timeout=10)
+            if response.status_code == 200 and len(response.json()) > 0:
+                date = response.json()[0]['date']
+            else:
+                return {'error': True, 'msg': 'Could not fetch recent EPIC dates.'}
+        except Exception:
+             return {'error': True, 'msg': 'Failed to connect to NASA EPIC API.'}
+             
+    # Fetch images for the specific date
+    url = f"https://api.nasa.gov/EPIC/api/natural/date/{date}?api_key={api_key}"
+    try:
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        if response.status_code != 200:
+            return {'error': True, 'msg': data.get('msg') or data.get('error', {}).get('message', 'NASA API Error')}
+            
+        # Format the data to include direct image URLs
+        # EPIC URL format: https://api.nasa.gov/EPIC/archive/natural/YYYY/MM/DD/png/epic_1b_20151031074844.png?api_key=DEMO_KEY
+        date_obj = datetime.strptime(date, '%Y-%m-%d')
+        formatted_date = date_obj.strftime('%Y/%m/%d')
+        
+        for item in data:
+            item['image_url'] = f"https://api.nasa.gov/EPIC/archive/natural/{formatted_date}/png/{item['image']}.png?api_key={api_key}"
+            
+        return {'date': date, 'images': data}
+    except Exception as e:
+        return {'error': True, 'msg': 'Failed to fetch EPIC imagery.'}
+
+def fetch_exoplanets():
+    # NASA Exoplanet Archive uses a TAP (Table Access Protocol) API
+    # We will query a subset of confirmed planets for performance.
+    # We don't need an API key for this specific open endpoint.
+    url = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync"
+    
+    # Simple query: Get 50 interesting exoplanets with basic details
+    # pl_name (Name), hostname (Star), pl_bmasse (Earth Mass), pl_rade (Earth Radius), disc_year (Discovery Year), discoverymethod
+    query = """
+    select top 100 pl_name, hostname, discoverymethod, disc_year, pl_bmasse, pl_rade, sy_dist 
+    from pscomppars 
+    where pl_bmasse is not null and sy_dist is not null
+    order by disc_year desc, sy_dist asc
+    """
+    
+    params = {
+        "query": query,
+        "format": "json"
+    }
+    
+    try:
+        response = requests.get(url, params=params, timeout=15)
+        if response.status_code != 200:
+            return {'error': True, 'msg': 'NASA Exoplanet Archive is currently unavailable.'}
+        return response.json()
+    except Exception as e:
+        return {'error': True, 'msg': 'Failed to connect to Exoplanet API.'}

@@ -38,7 +38,14 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav">
+                    
                     <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'epic.index' %}active{% endif %}" href="{{ url_for('epic.index') }}">Earth (EPIC)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'exoplanets.index' %}active{% endif %}" href="{{ url_for('exoplanets.index') }}">Exoplanets</a>
+                    </li>
+<li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}" href="{{ url_for('main.about') }}">About</a>
                     </li>
                 </ul>
