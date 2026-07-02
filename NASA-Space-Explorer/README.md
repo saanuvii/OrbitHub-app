@@ -1,4 +1,4 @@
-# NASA Space Explorer 🚀
+# OrbitHub 🚀
 
 A modern, responsive, and beautifully designed full-stack web application that interacts with various NASA Open APIs. Build with Python, Flask, and Bootstrap 5.
 

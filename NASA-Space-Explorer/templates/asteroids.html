@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Near Earth Asteroids - NASA Space Explorer{% endblock %}
+{% block title %}Near Earth Asteroids - OrbitHub{% endblock %}
 
 {% block content %}
 <div class="container py-4 fade-in">
@@ -24,7 +24,6 @@
                         <th>Miss Distance (km)</th>
                         <th>Approach Date</th>
                         <th>Hazardous</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,15 +45,10 @@
                                 <span class="badge bg-success">No</span>
                             {% endif %}
                         </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-glow save-favorite-btn" data-payload="{{ ast.fav_payload }}">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" class="text-center py-4">No asteroids found for this period.</td>
+                        <td colspan="6" class="text-center py-4">No asteroids found for this period.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -21,30 +21,6 @@ def fetch_apod(date=None):
         print(f"Error fetching APOD: {e}")
         return None
 
-def fetch_mars_photos(rover='curiosity', earth_date=None, camera=None, page=1):
-    url = f"https://api.nasa.gov/mars-photos/api/v1/rovers/{rover}/photos"
-    params = {
-        "api_key": get_api_key(),
-        "page": page
-    }
-    
-    if not earth_date:
-        # Default to a date known to have photos or use sol
-        params["sol"] = 1000
-    else:
-        params["earth_date"] = earth_date
-        
-    if camera and camera != 'all':
-        params["camera"] = camera
-        
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        return response.json().get('photos', [])
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching Mars photos: {e}")
-        return []
-
 def fetch_asteroids(start_date=None, end_date=None):
     if not start_date:
         start_date = datetime.now().strftime("%Y-%m-%d")
