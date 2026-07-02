@@ -89,13 +89,14 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text);
     border-radius: 12px;
-    padding: 0.6rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     font-weight: 500;
     letter-spacing: 1px;
     transition: all 0.3s ease;
@@ -103,7 +104,8 @@ body {
     font-size: 0.85rem;
     position: relative;
     overflow: hidden;
-    line-height: normal;
+    line-height: 1.5;
+    white-space: nowrap; /* Prevent text wrapping off-center */
 }
 
 .btn-glass:hover {
@@ -116,7 +118,7 @@ body {
 
 /* Ensure small glass buttons align properly */
 .btn-sm.btn-glass {
-    padding: 0.4rem 1rem;
+    padding: 0.35rem 1rem;
     font-size: 0.75rem;
 }
 
