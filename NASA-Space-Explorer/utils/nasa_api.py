@@ -68,31 +68,43 @@ def fetch_space_weather(start_date=None, end_date=None):
         flares_url = "https://api.nasa.gov/DONKI/FLR"
         params = {"startDate": start_date, "api_key": api_key}
         if end_date: params["endDate"] = end_date
-        flares_res = requests.get(flares_url, params=params, timeout=10)
-        if flares_res.status_code == 200:
-            weather_data["flares"] = flares_res.json()
+        try:
+            flares_res = requests.get(flares_url, params=params, timeout=10)
+            if flares_res.status_code == 200:
+                weather_data["flares"] = flares_res.json()
+        except Exception:
+            pass
             
         # Fetch Geomagnetic Storms
         storms_url = "https://api.nasa.gov/DONKI/GST"
-        storms_res = requests.get(storms_url, params=params, timeout=10)
-        if storms_res.status_code == 200:
-            weather_data["storms"] = storms_res.json()
+        try:
+            storms_res = requests.get(storms_url, params=params, timeout=10)
+            if storms_res.status_code == 200:
+                weather_data["storms"] = storms_res.json()
+        except Exception:
+            pass
             
         # Fetch CMEs
         cmes_url = "https://api.nasa.gov/DONKI/CME"
-        cmes_res = requests.get(cmes_url, params=params, timeout=10)
-        if cmes_res.status_code == 200:
-            weather_data["cmes"] = cmes_res.json()
+        try:
+            cmes_res = requests.get(cmes_url, params=params, timeout=10)
+            if cmes_res.status_code == 200:
+                weather_data["cmes"] = cmes_res.json()
+        except Exception:
+            pass
             
         # Fetch Notifications
         notif_url = "https://api.nasa.gov/DONKI/notifications"
         notif_params = {"startDate": start_date, "type": "all", "api_key": api_key}
         if end_date: notif_params["endDate"] = end_date
-        notif_res = requests.get(notif_url, params=notif_params, timeout=10)
-        if notif_res.status_code == 200:
-            weather_data["notifications"] = notif_res.json()
+        try:
+            notif_res = requests.get(notif_url, params=notif_params, timeout=10)
+            if notif_res.status_code == 200:
+                weather_data["notifications"] = notif_res.json()
+        except Exception:
+            pass
             
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         print(f"Error fetching Space Weather: {e}")
         
     return weather_data
