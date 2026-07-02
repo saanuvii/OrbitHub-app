@@ -6,10 +6,10 @@
 <div class="container py-5 fade-in text-center">
     <div class="glass-card p-5">
         <h2 class="mb-4">Search Results for "{{ query }}"</h2>
-        <div class="alert alert-info">
+        <div class="alert alert-info bg-transparent border-info text-info">
             <i class="fas fa-info-circle me-2"></i> The NASA APIs used in this project do not support a global keyword search. 
         </div>
-        <p class="text-muted mb-4">Try searching using specific date formats (YYYY-MM-DD) or rover names (curiosity, perseverance).</p>
+        <p class="text-muted mb-4">Try searching using specific date formats (YYYY-MM-DD) to look up Astronomy Pictures of the Day.</p>
         
         <div class="d-flex justify-content-center gap-3">
             <a href="{{ url_for('main.index') }}" class="btn btn-glass">Back to Home</a>
