@@ -7,14 +7,14 @@
     <!-- Hero Text Content -->
     <div class="container text-center fade-in pt-5 pb-4">
         <h1 class="display-3 fw-bold mb-4">Explore the <span class="text-gradient">Cosmos</span></h1>
-        <p class="lead mb-0 text-light fs-4 max-w-75 mx-auto opacity-75">Discover the universe through NASA's eyes. Access breathtaking imagery, near-Earth asteroids, and space weather data.</p>
+        <p class="lead mb-0 text-light fs-4 max-w-75 mx-auto opacity-75">Discover the universe through NASA's eyes. Access breathtaking imagery and track near-Earth asteroids.</p>
     </div>
 
     <!-- Features Section Floating -->
     <div id="features" class="container pb-5 mt-4">
         <div class="row justify-content-center g-4">
             <!-- APOD Card -->
-            <div class="col-md-4 fade-in delay-1">
+            <div class="col-md-5 fade-in delay-1">
                 <a href="{{ url_for('apod.index') }}" class="text-decoration-none">
                     <div class="glass-card h-100 p-5 text-center d-flex flex-column justify-content-center">
                         <div class="display-4 text-primary mb-4" style="filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.4));">
@@ -27,7 +27,7 @@
             </div>
             
             <!-- Asteroids Card -->
-            <div class="col-md-4 fade-in delay-2">
+            <div class="col-md-5 fade-in delay-2">
                 <a href="{{ url_for('asteroids.index') }}" class="text-decoration-none">
                     <div class="glass-card h-100 p-5 text-center d-flex flex-column justify-content-center">
                         <div class="display-4 text-warning mb-4" style="filter: drop-shadow(0 0 15px rgba(255, 193, 7, 0.4));">
@@ -35,19 +35,6 @@
                         </div>
                         <h3 class="h4 text-white mb-3">Asteroids</h3>
                         <p class="text-muted small mb-0">Search for Near Earth Asteroids based on their closest approach date to Earth.</p>
-                    </div>
-                </a>
-            </div>
-            
-            <!-- Weather Card -->
-            <div class="col-md-4 fade-in delay-3">
-                <a href="{{ url_for('weather.index') }}" class="text-decoration-none">
-                    <div class="glass-card h-100 p-5 text-center d-flex flex-column justify-content-center">
-                        <div class="display-4 text-info mb-4" style="filter: drop-shadow(0 0 15px rgba(13, 202, 240, 0.4));">
-                            <i class="fas fa-sun"></i>
-                        </div>
-                        <h3 class="h4 text-white mb-3">Space Weather</h3>
-                        <p class="text-muted small mb-0">Access solar flare, geomagnetic storm, and coronal mass ejection data.</p>
                     </div>
                 </a>
             </div>

@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="container py-4 fade-in">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Near Earth Asteroids (NEOs)</h2>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <h2 class="mb-0">Near Earth Asteroids (NEOs)</h2>
         
-        <form action="{{ url_for('asteroids.index') }}" method="GET" class="d-flex gap-2">
-            <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
-            <button type="submit" class="btn btn-glass text-nowrap">Show Next 7 Days</button>
+        <form action="{{ url_for('asteroids.index') }}" method="GET" class="d-flex gap-2 w-100 w-md-auto align-items-center justify-content-md-end">
+            <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required style="max-width: 200px;">
+            <button type="submit" class="btn btn-glass" style="white-space: nowrap; padding-left: 2rem; padding-right: 2rem;">Show Next 7 Days</button>
         </form>
     </div>
     

@@ -6,7 +6,6 @@ A modern, responsive, and beautifully designed full-stack web application that i
 
 - **Astronomy Picture of the Day (APOD):** View daily HD images or videos from space with detailed explanations.
 - **Near Earth Asteroids:** Keep track of objects approaching Earth, complete with hazard warnings and speed data.
-- **Space Weather Dashboard:** Monitor solar flares, geomagnetic storms, and coronal mass ejections.
 - **Search Capabilities:** Basic routing search for specific dates.
 - **Premium UI:** Space-themed dark mode, glassmorphism UI elements, smooth animations, and toast notifications.
 

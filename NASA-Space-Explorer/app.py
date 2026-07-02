@@ -16,13 +16,11 @@ def create_app(config_class=Config):
     from routes.main import main_bp
     from routes.apod import apod_bp
     from routes.asteroids import asteroids_bp
-    from routes.weather import weather_bp
     from routes.search import search_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(apod_bp, url_prefix='/apod')
     app.register_blueprint(asteroids_bp, url_prefix='/asteroids')
-    app.register_blueprint(weather_bp, url_prefix='/weather')
     app.register_blueprint(search_bp, url_prefix='/search')
 
     # Global Error Handlers
